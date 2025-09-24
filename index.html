@@ -24,32 +24,23 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      display: none;
       z-index: 100;
-      align-items: center;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
     }
 
     .plan-button {
-      padding: 10px 16px;
-      font-size: 14px;
+      padding: 10px 20px;
+      font-size: 15px;
       font-weight: bold;
       border: none;
       border-radius: 8px;
       background-color: #5E0F8B;
-      color: #ffffff;
+      color: #fff;
       cursor: pointer;
     }
 
     .plan-button:hover {
-      background-color: #5E0F8B;
+      background-color: #7a17b8;
     }
 
     .a-enter-vr-button {
@@ -63,64 +54,61 @@
   <img src="logo.png" id="logo" alt="Logo">
 
   <!-- Buttons Panel -->
-  <div class="button-panel" id="planButtons" style="display: none;">
-    <div class="button-row">
-      <button class="plan-button" data-video="plan1Video">Plan 1</button>
-      <button class="plan-button" data-video="plan2Video">Plan 2</button>
-      <button class="plan-button" data-video="plan3Video">Plan 3</button>
-    </div>
-    <div class="button-row">
-      <button class="plan-button" data-video="plan4Video">Plan 4</button>
-      <button class="plan-button" data-video="plan5Video">Plan 5</button>
-    </div>
+  <div class="button-panel" id="planButtons">
+    <button class="plan-button" data-video="plan1Video">Plan 1</button>
   </div>
 
   <!-- AR Scene -->
-  <a-scene mindar-image="imageTargetSrc: ./targets.mind" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+  <a-scene 
+    mindar-image="imageTargetSrc: ./targets.mind" 
+    color-space="sRGB" 
+    renderer="colorManagement: true, physicallyCorrectLights, antialias: true" 
+    vr-mode-ui="enabled: false" 
+    device-orientation-permission-ui="enabled: false">
+
     <a-assets>
-      <video id="plan1Video" src="plan1.mp4" playsinline loop></video>
-      <video id="plan2Video" src="plan2.mp4" playsinline loop></video>
-      <video id="plan3Video" src="plan3.mp4" playsinline loop></video>
-      <video id="plan4Video" src="plan4.mp4" playsinline loop></video>
-      <video id="plan5Video" src="plan5.mp4" playsinline loop></video>
+      <!-- Preload video -->
+      <video id="plan1Video" src="plan1.mp4" playsinline preload="auto" loop></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
     <a-entity id="target1" mindar-image-target="targetIndex: 0">
-      <a-plane id="videoDisplay" position="0 0 0" height="0.59" width="1"></a-plane>
+      <!-- Proper 16:9 ratio -->
+      <a-plane 
+        id="videoDisplay" 
+        position="0 0 0" 
+        width="1" 
+        height="0.56" 
+        material="shader: flat">
+      </a-plane>
     </a-entity>
   </a-scene>
 
   <script>
     const videoDisplay = document.querySelector('#videoDisplay');
+    const videoEl = document.querySelector('#plan1Video');
     const buttonsContainer = document.querySelector('#planButtons');
-    const planButtons = document.querySelectorAll('.plan-button');
+    const planButton = document.querySelector('.plan-button');
+
     let currentVideo = null;
 
-    const updateVideo = (videoId) => {
-      const videoEl = document.querySelector(`#${videoId}`);
-      if (currentVideo && currentVideo !== videoEl) {
-        currentVideo.pause();
-      }
-      currentVideo = videoEl;
-      videoDisplay.setAttribute('material', 'src', `#${videoId}`);
-      currentVideo.play();
-    };
-
-    planButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        updateVideo(button.dataset.video);
-      });
-    });
-
+    // Show button when target appears
     const target = document.querySelector('#target1');
     target.addEventListener('targetFound', () => {
-      buttonsContainer.style.display = 'flex';
+      buttonsContainer.style.display = 'block';
     });
+
     target.addEventListener('targetLost', () => {
       buttonsContainer.style.display = 'none';
       if (currentVideo) currentVideo.pause();
+    });
+
+    // Play only when button clicked
+    planButton.addEventListener('click', () => {
+      videoDisplay.setAttribute('material', 'src', '#plan1Video');
+      currentVideo = videoEl;
+      currentVideo.play();
     });
   </script>
 </body>
