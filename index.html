@@ -30,14 +30,13 @@
 
     .plan-button {
       padding: 12px 24px;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: bold;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       background-color: #5E0F8B;
       color: #fff;
       cursor: pointer;
-      min-width: 160px;
       transition: background 0.3s;
     }
 
@@ -55,9 +54,9 @@
   <!-- Logo -->
   <img src="logo.png" id="logo" alt="Logo">
 
-  <!-- Play/Pause Button -->
+  <!-- Buttons Panel -->
   <div class="button-panel" id="planButtons">
-    <button class="plan-button" id="toggleButton">▶️ Play Video</button>
+    <button class="plan-button" id="playPauseBtn">▶️ Play Video</button>
   </div>
 
   <!-- AR Scene -->
@@ -89,35 +88,33 @@
     const videoDisplay = document.querySelector('#videoDisplay');
     const videoEl = document.querySelector('#plan1Video');
     const buttonsContainer = document.querySelector('#planButtons');
-    const toggleButton = document.querySelector('#toggleButton');
-    const target = document.querySelector('#target1');
+    const playPauseBtn = document.querySelector('#playPauseBtn');
 
     let isPlaying = false;
 
-    // Show button when target is found
+    const target = document.querySelector('#target1');
     target.addEventListener('targetFound', () => {
       buttonsContainer.style.display = 'block';
+      // Set video source ready when target is found
+      videoDisplay.setAttribute('material', 'src', '#plan1Video');
     });
 
-    // Hide button & pause video when target is lost
     target.addEventListener('targetLost', () => {
       buttonsContainer.style.display = 'none';
       videoEl.pause();
       isPlaying = false;
-      toggleButton.textContent = "▶️ Play Video";
+      playPauseBtn.textContent = "▶️ Play Video";
     });
 
-    // Toggle play/pause on button click
-    toggleButton.addEventListener('click', () => {
+    playPauseBtn.addEventListener('click', () => {
       if (!isPlaying) {
-        videoDisplay.setAttribute('material', 'src', '#plan1Video');
         videoEl.play();
+        playPauseBtn.textContent = "⏸ Pause Video";
         isPlaying = true;
-        toggleButton.textContent = "⏸ Pause Video";
       } else {
         videoEl.pause();
+        playPauseBtn.textContent = "▶️ Play Video";
         isPlaying = false;
-        toggleButton.textContent = "▶️ Play Video";
       }
     });
   </script>
